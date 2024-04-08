@@ -103,7 +103,7 @@
 
                             <div>
                                 <div>
-                                    <label for="select-country" class="mt-2 ps-3">City</label>
+                                    <label for="select-country" class="mt-2 ps-3">City</label><//input type="text">
                                     <div class="me-5">
                                         <select name="city" class="mt-1 mx-3 py-1 input form-control" id="selectcity" data-live-search="true" style="size: 1;">
                                         </select>
@@ -151,7 +151,7 @@
                 return false;
             }
             return true;
-        }, "Password must contain lower, upper, numeric and special character");
+        }//, "Password must contain lower, upper, numeric and special character");
 
         function submitfunc() {
             let element = document.getElementById("showpass");
@@ -244,3 +244,4 @@
 
 
 </html>
+

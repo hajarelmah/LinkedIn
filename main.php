@@ -8,15 +8,49 @@
             header("Location: signin.php", true, 303);
         } else {
             getParams();
-            if ($action  == "sharepost"  &&  strlen($postcontent) > 0) {
-                try {
-                    $sql = "INSERT INTO `post`(`content`, `userid`) VALUES ('" . $postcontent . "',
-                        '" . $userid . "')";
-                    $conn->exec($sql);
-                } catch (PDOException $e) {
-                    echo "Error: " . $e->getMessage();
+            // Section de traitement du formulaire de partage de publication
+    if ($action == "sharepost" && strlen($postcontent) > 0) {
+        try {
+            $sql = "INSERT INTO `post`(`content`, `userid`) VALUES ('" . $postcontent . "',
+                '" . $userid . "')";
+            $conn->exec($sql);
+
+            // Gestion du téléchargement de fichiers
+            if (isset($_FILES["file"]) && $_FILES["file"]["size"] > 0) {
+                $file = $_FILES["file"];
+                $fileName = basename($file["name"]);
+                $fileTemp = $file["tmp_name"];
+                $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                
+                // Vérifiez le type de fichier et déplacez-le vers le répertoire approprié
+                $allowedTypes = ["jpg", "jpeg", "png", "gif", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "mp4", "avi", "mov"];
+                if (in_array($fileType, $allowedTypes)) {
+                    $uploadDir = "uploads/";
+                    $uploadPath = $uploadDir . date("YmdHis") . "_" . $fileName;
+                    move_uploaded_file($fileTemp, $uploadPath);
+                    
+                    // Obtenez l'identifiant de la publication récemment insérée
+                    $postId = $conn->lastInsertId();
+
+                    // Ajoutez le chemin d'accès au fichier dans la base de données
+                    $sql = "UPDATE post SET file_path = :filePath WHERE post_id = :postId";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':filePath', $uploadPath);
+                    $stmt->bindParam(':postId', $postId);
+                    $stmt->execute();
+                } else {
+                    echo "File type not allowed.";
                 }
-                header("Location: main.php", true, 303);
+            }
+
+            header("Location: main.php", true, 303);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+        header("Location: main.php", true, 303);
+    }
+                
             }
             include "header.php";
         ?>
@@ -417,4 +451,3 @@
                 });
                 session_destroy();
             </script>
-        <?php  } ?>

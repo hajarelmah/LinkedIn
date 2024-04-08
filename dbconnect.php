@@ -1,7 +1,8 @@
+
 <?php
     $dbhost = "localhost";
-    $dbuser = "adminlinkedin";
-    $dbpass = "iX27h]6b7rXyh[Vb";
+    $dbuser = "root";
+    $dbpass = "";
     $dbname = "linkedin";
 
     $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
